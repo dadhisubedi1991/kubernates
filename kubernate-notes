@@ -1,0 +1,101 @@
+kubectl get nodes
+minikube start
+kubectl version 
+
+FOR DEPLOYMENT COMMANDS
+kubectl create deployment(images) -depl --image=image
+EG: kubectl create deployment nginx-depl --image=nginx
+kubectl get (pods/deployment[ to see the pods which you created]
+[once you create deployment for that images then after it become pods)
+
+TO CREATE PODS
+- go to the terminal
+-mkdir(kubernate.yml)
+-cd("")
+-touch("")
+-vim("")
+-cat("")
+-ls(to see the what is running )
+
+OTHERS REGULAR USES COMMANDS
+kubectl create -f (pods name which you created)
+kubectl edit (pods name)
+kubectl delet (pods name/number)
+kubectl get pods -w (-w mean to watch the running pods)
+kubectl logs (pods name)
+kubectl describe (pod name)
+kubectl exec -it(pod name) --bin/bash --[inside containers]
+kubectl apply -f (name of files)
+
+FOR SECRET
+Secret must be created before the deployment
+kubectl create -f secret
+kubectl get secret
+kubectl describe secret
+kubectl delete secret
+EG:
+apiVersion:v1
+kind:Secret
+metadata:
+   name: image-secret
+type: opaque
+ data:
+    -username: image-root-username 
+[for username go and see at dockerhub and look for the image you trying to create secret]
+   - password: image-root-password
+
+Value must be base64 encoded
+ for terminal [echo -n "username"|base64] -once you do this in termainal you will get username on terminal
+              [echo -n "password"|base64]
+
+SERVICE
+deployment and service should be in 1 file because they both belongs together
+(---)three hifon=it mean new service has created in yml
+EG:
+apiVersion:v1
+kind:Service
+metadata:
+ name: image-service
+spec: 
+  selector: 
+     app:image
+  ports:
+     -protocol: TCP (massage/version)
+         port:27017(eg-image port)
+      targetport:80800(eg- where you want to port this image)
+Service mean internal information of the that particular images and configmap mean external configuration
+-Add secret and service together for deployment it should be look like this 
+Eg:
+    env:
+        - name: ME_CONFIG_MONGODB_ADMINUSERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-username
+        - name: ME_CONFIG_MONGODB_ADMINPASSWORD
+          valueFrom: 
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongo-root-password
+        - name: ME_CONFIG_MONGODB_SERVER
+          valueFrom: 
+            configMapKeyRef:
+              name: mongodb-configmap
+              key: database_url
+
+CONFIGMAP
+It means external configuration/service
+-have to added URL
+-ip address of node
+-port of external service
+Configmap must already be in the kubernates/k8s cluster when referencing it
+EG:
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: mongodb-configmap
+    data:
+     database_url: mongodb-service
+
+
+
